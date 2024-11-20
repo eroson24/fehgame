@@ -32,4 +32,4 @@
 *.app
 
 #libraries
-Proteus_Simulator/Proteus_Simulator/
+Proteus_Simulator/Proteus_Simulator/*
