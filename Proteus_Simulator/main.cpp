@@ -24,11 +24,9 @@ int main()
 
     while (1) {
         LCD.Clear();
-        LCD.Write("MENU");
-        LCD.DrawVerticalLine(80, 0, 239);
-        LCD.DrawVerticalLine(160, 0, 239);
-        LCD.DrawVerticalLine(240, 0, 239);
-
+        FEHImage titleScreen;
+        titleScreen.Open("New Piskel.png");
+        titleScreen.Draw(0,0);
 
         while(!LCD.Touch(&xPosition, &yPosition)){}
 
