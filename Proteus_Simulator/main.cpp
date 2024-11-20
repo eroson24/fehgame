@@ -106,7 +106,7 @@ void displayScores(int highScoreList[]){
 void waitForBackButton(){
     int xPosition=0, yPosition=0;
     FEHImage backButton;
-    backButton.Open("New Piskel.png");
+    backButton.Open("backbutton.png");
     backButton.Draw(270,0);
 
     while(xPosition < 270 || yPosition > 50){
