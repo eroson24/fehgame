@@ -25,7 +25,7 @@ int main()
     while (1) {
         LCD.Clear();
         FEHImage titleScreen;
-        titleScreen.Open("New Piskel.png");
+        titleScreen.Open("title.png");
         titleScreen.Draw(0,0);
 
         while(!LCD.Touch(&xPosition, &yPosition)){}
