@@ -6,6 +6,9 @@
 #include "LCDColors.h"
 #include "FEHRandom.h"
 
+#define PLAYER_HEIGHT 30
+#define PLAYER_WIDTH 30
+
 using namespace std;
 
 int runGame();
@@ -94,15 +97,6 @@ int runGame(){
     FEHIcon::DrawIconArray(buttons, 1, 5, 0, 210, 80, 90, Labels, GOLD, WHITE);
     LCD.Clear();
 
-    FEHImage buttonImages[5];
-    buttonImages[0].Open("up-left-arrow.png");
-    buttonImages[1].Open("left-arrow.png");
-    buttonImages[2].Open("up-arrow.png");
-    buttonImages[3].Open("right-arrow.png");
-    buttonImages[4].Open("up-right-arrow.png");
-    for(int i = 0; i < 5; i ++){
-        buttonImages[i].Draw(85 + i*30, 2);
-    }
 
 
     while(playerX < 320){
@@ -110,6 +104,7 @@ int runGame(){
             playerY++;
         }
         if(LCD.Touch(&x,&y)){
+            
         if(buttons[3].Pressed(x,y, 1)){
             if(isValidMovement(playerX, playerY, 1, 0)){
                 playerX++;
@@ -117,6 +112,21 @@ int runGame(){
         }else if(buttons[2].Pressed(x,y, 1)){
             if(isValidMovement(playerX, playerY, 0, -3)){
                 playerY -= 3;
+            }
+        }else if(buttons[0].Pressed(x,y, 1)){
+            if(isValidMovement(playerX, playerY, -1, -3)){
+                playerY -= 3;
+                playerX--;
+            }
+        }else if(buttons[1].Pressed(x,y, 1)){
+            if(isValidMovement(playerX, playerY, -1, 0)){
+                playerX --;
+            }
+        }else if(buttons[4].Pressed(x,y, 1)){
+            if(isValidMovement(playerX, playerY, 1, -3)){
+                playerX++;
+                playerY-=3;
+
             }
         }
 
@@ -131,16 +141,21 @@ int runGame(){
 
 /* updates the game frame with the given x and y position*/
 void updateGameView(int x, int y){
-    //LCD.Clear(WHITE);
-    LCD.SetFontColor(BLACK);
-    LCD.FillRectangle(0, 35, 319, 204);
-    LCD.SetFontColor(WHITE);
 
-    /*
     FEHImage background;
-    background.Open("background.png");
+    background.Open("level1.png");
     background.Draw(0,0);
-    */
+    FEHImage buttonImages[5];
+    buttonImages[0].Open("up-left-arrow.png");
+    buttonImages[1].Open("left-arrow.png");
+    buttonImages[2].Open("up-arrow.png");
+    buttonImages[3].Open("right-arrow.png");
+    buttonImages[4].Open("up-right-arrow.png");
+    for(int i = 0; i < 5; i ++){
+        buttonImages[i].Draw(85 + i*30, 2);
+    }
+
+    
     FEHImage buttons[5];
     buttons[0].Open("up-left-arrow.png");
     buttons[1].Open("left-arrow.png");
@@ -186,7 +201,7 @@ void waitForBackButton(){
 }
 
 bool isValidMovement(int currentx, int currenty, int deltax, int deltay){
-    if(currenty + deltay > 210 ){
+    if(currenty + deltay +PLAYER_HEIGHT >  240 ){
         return false;
     }else{
         return true;
