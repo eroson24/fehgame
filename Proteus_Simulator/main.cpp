@@ -12,6 +12,8 @@ int runGame();
 void displayGameOver(int);
 void displayScores(int []);
 void waitForBackButton();
+void updateGameView(int, int);
+bool isValidMovement(int, int, int, int);
 
 int main()
 {
@@ -83,8 +85,74 @@ int main()
 
 /* runs the game and returns the score*/
 int runGame(){
-    LCD.WriteLine("Play Game Here");
-    return Random.RandInt();
+    float startTime = TimeNow();
+    // LCD.WriteLine("Play Game Here");
+    int x,y;
+    int playerX = 0, playerY = 200;
+    FEHIcon::Icon buttons[5];
+    char Labels[5][20] = {"ul","l","u","ur", "r"};
+    FEHIcon::DrawIconArray(buttons, 1, 5, 0, 210, 80, 90, Labels, GOLD, WHITE);
+    LCD.Clear();
+
+    FEHImage buttonImages[5];
+    buttonImages[0].Open("up-left-arrow.png");
+    buttonImages[1].Open("left-arrow.png");
+    buttonImages[2].Open("up-arrow.png");
+    buttonImages[3].Open("right-arrow.png");
+    buttonImages[4].Open("up-right-arrow.png");
+    for(int i = 0; i < 5; i ++){
+        buttonImages[i].Draw(85 + i*30, 2);
+    }
+
+
+    while(playerX < 320){
+        if(isValidMovement(playerX, playerY, 0, 1)){
+            playerY++;
+        }
+        if(LCD.Touch(&x,&y)){
+        if(buttons[3].Pressed(x,y, 1)){
+            if(isValidMovement(playerX, playerY, 1, 0)){
+                playerX++;
+            }
+        }else if(buttons[2].Pressed(x,y, 1)){
+            if(isValidMovement(playerX, playerY, 0, -3)){
+                playerY -= 3;
+            }
+        }
+
+        }
+        
+        updateGameView(playerX, playerY);
+        Sleep(10);      
+    }
+    waitForBackButton();
+    return static_cast<int>(round(TimeNow() - startTime));
+}
+
+/* updates the game frame with the given x and y position*/
+void updateGameView(int x, int y){
+    //LCD.Clear(WHITE);
+    LCD.SetFontColor(BLACK);
+    LCD.FillRectangle(0, 35, 319, 204);
+    LCD.SetFontColor(WHITE);
+
+    /*
+    FEHImage background;
+    background.Open("background.png");
+    background.Draw(0,0);
+    */
+    FEHImage buttons[5];
+    buttons[0].Open("up-left-arrow.png");
+    buttons[1].Open("left-arrow.png");
+    buttons[2].Open("up-arrow.png");
+    buttons[3].Open("right-arrow.png");
+    buttons[4].Open("up-right-arrow.png");
+
+    FEHImage player;
+    player.Open("player.png");
+    player.Draw(x, y);
+
+
 }
 
 /* prints the game over screen with the results from the game*/
@@ -115,6 +183,13 @@ void waitForBackButton(){
 
     while(LCD.Touch(&xPosition, &yPosition)){}
     LCD.Clear();
+}
 
+bool isValidMovement(int currentx, int currenty, int deltax, int deltay){
+    if(currenty + deltay > 210 ){
+        return false;
+    }else{
+        return true;
+    }
 
 }
