@@ -6,8 +6,8 @@
 #include "LCDColors.h"
 #include "FEHRandom.h"
 
-#define PLAYER_HEIGHT 30
-#define PLAYER_WIDTH 30
+#define PLAYER_HEIGHT 17
+#define PLAYER_WIDTH 15
 #define JUMP_HEIGHT 10
 #define MOVEMENT_SPEED 4
 #define BLOCK_WIDTH 20
@@ -18,9 +18,18 @@ int runGame();
 void displayGameOver(int);
 void displayScores(int []);
 void waitForBackButton();
-void updateGameView(int, int);
-bool isValidMovement(int, int, int, int);
+void updateGameView(int, int, int);
+class Player{
+    private:
 
+    public:
+        Player(){xPosition = 5; yPosition = 100; xVelocity = 0; yVelocity = 0;}
+        int xPosition;
+        int yPosition;
+        int xVelocity;
+        int yVelocity;
+        bool isValidMovement(int, int);
+};
 int main()
 {
     // FEHImage startButton;
@@ -94,82 +103,92 @@ int runGame(){
     double startTime = TimeNow();
     // LCD.WriteLine("Play Game Here");
     int x,y;
-    int velocityX = 0, velocityY = 0 ;
-    int playerX = 5, playerY = 180;
+    Player player;
     FEHIcon::Icon buttons[5];
     char Labels[5][20] = {"ul","l","u","ur", "r"};
     FEHIcon::DrawIconArray(buttons, 1, 5, 0, 210, 80, 90, Labels, GOLD, WHITE);
     LCD.Clear();
 
-    while(playerX < 320 && playerY < 240){
+    while(player.xPosition && player.yPosition < 240){
 
         /* friction*/
-        if(velocityX > MOVEMENT_SPEED){
-            velocityX -= MOVEMENT_SPEED;
-        } else if (velocityX < -MOVEMENT_SPEED){
-            velocityX += MOVEMENT_SPEED;
+        if(player.xVelocity > MOVEMENT_SPEED){
+            player.xVelocity -= MOVEMENT_SPEED;
+        } else if (player.xVelocity < -MOVEMENT_SPEED){
+            player.xVelocity += MOVEMENT_SPEED;
         } else{
-            velocityX = 0;
+            player.xVelocity = 0;
         }
 
 
 
-        /* right button */
         if(LCD.Touch(&x,&y)){
+
+            /* right button */
             if(buttons[3].Pressed(x,y, 1)){
-                velocityX += MOVEMENT_SPEED;
+                player.xVelocity += MOVEMENT_SPEED;
 
             /* jump button*/
-            }else if(buttons[2].Pressed(x,y, 1) && !isValidMovement(playerX,playerY,0,1)){
-                velocityY -= JUMP_HEIGHT;
+            }else if(buttons[2].Pressed(x,y, 1) && !player.isValidMovement(0,1)){
+                player.yVelocity -= JUMP_HEIGHT;
             
             /* jump left button*/
             }else if(buttons[0].Pressed(x,y, 1)){
-                if (!isValidMovement(playerX,playerY,0,1)){
-                    velocityY -= JUMP_HEIGHT;
+                if (!player.isValidMovement(0,1)){
+                    player.yVelocity -= JUMP_HEIGHT;
                 }
-                velocityX -= MOVEMENT_SPEED;
+                player.xVelocity -= MOVEMENT_SPEED;
 
             /* left button*/
             }else if(buttons[1].Pressed(x,y, 1)){
-                velocityX -= MOVEMENT_SPEED;
+                player.xVelocity -= MOVEMENT_SPEED;
 
             /* jump right button*/
             }else if(buttons[4].Pressed(x,y, 1)){
-                velocityX += MOVEMENT_SPEED;
-                if (!isValidMovement(playerX,playerY,0,1)){
-                velocityY -= JUMP_HEIGHT;
+                if (!player.isValidMovement(0,1)){
+                    player.yVelocity -= JUMP_HEIGHT;
                 }
-        }
+                player.xVelocity += MOVEMENT_SPEED;
+
+            }
 
         }
 
         /* gravity, this code will def make errors later. 
-        The question is whether or not they are bad enough to make me wanna get good logic*/
-        if(isValidMovement(playerX + velocityX, playerY + velocityY, 0, 1)){
-            velocityY += 1;
-        } else{
-            velocityY = 0;
-        }
+        The question is whether or not they are bad enough to make me wanna get good logic
+        it is now later and I can confirm it is not working :(*/
+        //player.yPosition += player.yVelocity;
+        // if(player.isValidMovement(/*player.xPosition + player.xVelocity, player.yPosition + player.yVelocity, */0, 1)){
+        //     player.yPosition -= player.yVelocity;
+        //     player.yVelocity += 1;
+        // } else{
+        //     player.yVelocity = 0;
+        // }
+        player.yVelocity++;
 
 
         /*same here, i will be surprised if this works long term*/
-        while(abs(velocityX) > 0 ){
-            if(isValidMovement(playerX, playerY, velocityX, 0)){
-                playerX += velocityX;
+        while(abs(player.xVelocity) > 0 ){
+            if(player.isValidMovement(player.xVelocity, 0)){
+                player.xPosition += player.xVelocity;
                 break;
             }else{
-                velocityX --;
+                player.xVelocity-= player.xVelocity/abs(player.xVelocity);
             }
         }
-        if(isValidMovement(playerX, playerY, 0, velocityY)){
-            playerY += velocityY;
-        
+
+        /*same here, i will be surprised if this works long term*/
+        while(abs(player.yVelocity) > 0 ){
+            if(player.isValidMovement(0, player.yVelocity)){
+                player.yPosition += player.yVelocity;
+                break;
+            }else{
+                player.yVelocity-= player.yVelocity/abs(player.yVelocity);
+            }
         }
 
 
-
-        updateGameView(playerX, playerY);
+        updateGameView(player.xPosition, player.yPosition, static_cast<int>(round(TimeNow() - startTime)));
         Sleep(10);      
     }
     waitForBackButton();
@@ -177,7 +196,7 @@ int runGame(){
 }
 
 /* updates the game frame with the given x and y position*/
-void updateGameView(int x, int y){
+void updateGameView(int x, int y, int time){
 
     FEHImage background;
     background.Open("level1.png");
@@ -192,17 +211,11 @@ void updateGameView(int x, int y){
         buttonImages[i].Draw(85 + i*30, 2);
     }
 
-    
-    FEHImage buttons[5];
-    buttons[0].Open("up-left-arrow.png");
-    buttons[1].Open("left-arrow.png");
-    buttons[2].Open("up-arrow.png");
-    buttons[3].Open("right-arrow.png");
-    buttons[4].Open("up-right-arrow.png");
-
     FEHImage player;
-    player.Open("player.png");
-    player.Draw(x, y);
+    player.Open("playeridleframe1.png");
+    player.Draw(x - PLAYER_HEIGHT/2, y);
+
+    LCD.WriteAt(time, 279,  13 );
 
 
 }
@@ -237,35 +250,35 @@ void waitForBackButton(){
     LCD.Clear();
 }
 
-bool isValidMovement(int currentx, int currenty, int deltax, int deltay){
+bool Player::isValidMovement(int deltax, int deltay){
     /* TODO: look into making it into a hashtable*/
-    int proposedx = currentx + deltax;
+    int proposedx = xPosition + deltax;
     if(proposedx >= 0 && proposedx <= (3*BLOCK_WIDTH) ){
-        if(currenty + deltay  + PLAYER_HEIGHT > 220){
+        if(yPosition + deltay + PLAYER_HEIGHT > 220){
             return false;
         }else{
-        return true;
+            return true;
         }
     } else if(proposedx >= 4*BLOCK_WIDTH && proposedx < 5*BLOCK_WIDTH){
-        if(currenty + deltay + PLAYER_HEIGHT > 220){
+        if(yPosition + deltay + PLAYER_HEIGHT > 220){
             return false;
         }else{
             return true;
         }
     } else if(proposedx >= 5*BLOCK_WIDTH && proposedx < 6*BLOCK_WIDTH){
-        if(currenty + deltay + PLAYER_HEIGHT > 200){
+        if(yPosition + deltay + PLAYER_HEIGHT > 198){
             return false;
         }else{
             return true;
         }
     }else if(proposedx >= 6*BLOCK_WIDTH && proposedx < 7*BLOCK_WIDTH){
-        if(currenty + deltay + PLAYER_HEIGHT > 180){
+        if(yPosition + deltay + PLAYER_HEIGHT > 178){
             return false;
         }else{
             return true;
         }
     }else if(proposedx >= 9*BLOCK_WIDTH && proposedx < 10*BLOCK_WIDTH){
-        if(currenty + deltay + PLAYER_HEIGHT > 180){
+        if(yPosition + deltay + PLAYER_HEIGHT > 178){
             return false;
         }else{
             return true;
