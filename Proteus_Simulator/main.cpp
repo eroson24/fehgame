@@ -18,7 +18,7 @@ int runGame();
 void displayGameOver(int);
 void displayScores(int []);
 void waitForBackButton();
-void updateGameView(int, int);
+void updateGameView(int, int, int);
 class Player{
     private:
 
@@ -188,7 +188,7 @@ int runGame(){
         }
 
 
-        updateGameView(player.xPosition, player.yPosition);
+        updateGameView(player.xPosition, player.yPosition, static_cast<int>(round(TimeNow() - startTime)));
         Sleep(10);      
     }
     waitForBackButton();
@@ -196,7 +196,7 @@ int runGame(){
 }
 
 /* updates the game frame with the given x and y position*/
-void updateGameView(int x, int y){
+void updateGameView(int x, int y, int time){
 
     FEHImage background;
     background.Open("level1.png");
@@ -214,6 +214,8 @@ void updateGameView(int x, int y){
     FEHImage player;
     player.Open("playeridleframe1.png");
     player.Draw(x - PLAYER_HEIGHT/2, y);
+
+    LCD.WriteAt(time, 279,  13 );
 
 
 }
@@ -264,19 +266,19 @@ bool Player::isValidMovement(int deltax, int deltay){
             return true;
         }
     } else if(proposedx >= 5*BLOCK_WIDTH && proposedx < 6*BLOCK_WIDTH){
-        if(yPosition + deltay + PLAYER_HEIGHT > 200){
+        if(yPosition + deltay + PLAYER_HEIGHT > 198){
             return false;
         }else{
             return true;
         }
     }else if(proposedx >= 6*BLOCK_WIDTH && proposedx < 7*BLOCK_WIDTH){
-        if(yPosition + deltay + PLAYER_HEIGHT > 180){
+        if(yPosition + deltay + PLAYER_HEIGHT > 178){
             return false;
         }else{
             return true;
         }
     }else if(proposedx >= 9*BLOCK_WIDTH && proposedx < 10*BLOCK_WIDTH){
-        if(yPosition + deltay + PLAYER_HEIGHT > 180){
+        if(yPosition + deltay + PLAYER_HEIGHT > 178){
             return false;
         }else{
             return true;
