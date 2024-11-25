@@ -75,22 +75,26 @@ int main()
         /* displays the instructions*/
         }else if(xPosition <= 240 && xPosition > 160){
             LCD.Clear();
-            LCD.WriteLine("instructions clicked");
+            LCD.WriteLine("Instructions:");
             LCD.WriteLine(" ");
             LCD.WriteLine(" ");
-            LCD.WriteLine("Click on the buttons on the screen to move your character. Your goal is to make it to the very end on the right, avoiding any falls to your death.");
-            LCD.WriteLine("click in the upper right to go back");
+            LCD.WriteLine("Click on the buttons at the top to move your character. Your goal is to make it to the very end on the right, avoiding any falls to your death.");
+            LCD.WriteLine("Click the arrow in the top right to go back.");
 
             waitForBackButton();
 
         /* displays the credits*/
         }else if(xPosition <= 320 && xPosition > 240){
             LCD.Clear();
-            LCD.WriteLine("credits clicked");
+            LCD.SetFontColor(BLUE);
+            LCD.WriteLine("Credits:");
             LCD.WriteLine(" ");
             LCD.WriteLine(" ");
-            LCD.WriteLine("Made by Erol and Nolan");
-            LCD.WriteLine("click in the upper right to go back");
+
+            LCD.SetFontColor(WHITE);
+            LCD.WriteLine("Made by Erol and Nolan.");
+            LCD.WriteLine("Click in the upper");
+            LCD.WriteLine("right to go back.");
 
             waitForBackButton();
 
