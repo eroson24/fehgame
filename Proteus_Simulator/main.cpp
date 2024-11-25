@@ -5,6 +5,7 @@
 #include "FEHUtility.h"
 #include "LCDColors.h"
 #include "FEHRandom.h"
+#include "string.h"
 
 #define PLAYER_HEIGHT 17
 #define PLAYER_WIDTH 15
@@ -19,6 +20,8 @@ void displayGameOver(int);
 void displayScores(int []);
 void waitForBackButton();
 void updateGameView(int, int, int);
+
+double startTime = TimeNow();
 class Player{
     private:
 
@@ -28,8 +31,10 @@ class Player{
         int yPosition;
         int xVelocity;
         int yVelocity;
+        char walkCycle[30][29];
         bool isValidMovement(int, int);
 };
+
 int main()
 {
     // FEHImage startButton;
@@ -211,8 +216,37 @@ void updateGameView(int x, int y, int time){
         buttonImages[i].Draw(85 + i*30, 2);
     }
 
+    char walkCycle[30][29];
+    for(int i = 0; i < 8; i++){
+        strcpy(walkCycle[i], "walkcycle/pixil-frame-0.png");
+    }
+    for(int i = 0; i < 3; i++){
+        strcpy(walkCycle[i + 8], "walkcycle/pixil-frame-1.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 11], "walkcycle/pixil-frame-2.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 13], "walkcycle/pixil-frame-3.png");
+    }
+    for(int i = 0; i < 8; i++){
+        strcpy(walkCycle[i + 15], "walkcycle/pixil-frame-4.png");
+    }
+    for(int i = 0; i < 3; i++){
+        strcpy(walkCycle[i + 23], "walkcycle/pixil-frame-5.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 26], "walkcycle/pixil-frame-6.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 28], "walkcycle/pixil-frame-7.png");
+    }
+
+
+    int index =  static_cast<int>(round((TimeNow() - startTime) * 40)) % 30;
+
     FEHImage player;
-    player.Open("playeridleframe1.png");
+    player.Open(walkCycle[index]);
     player.Draw(x - PLAYER_HEIGHT/2, y);
 
     LCD.WriteAt(time, 279,  13 );
