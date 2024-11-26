@@ -19,21 +19,21 @@ int runGame();
 void displayGameOver(int);
 void displayScores(int []);
 void waitForBackButton();
-void updateGameView(int, int, int);
 
-double startTime = TimeNow();
 class Player{
     private:
 
     public:
-        Player(){xPosition = 5; yPosition = 100; xVelocity = 0; yVelocity = 0;}
+        Player();
         int xPosition;
         int yPosition;
         int xVelocity;
         int yVelocity;
         char walkCycle[30][29];
+        int startTime;
         bool isValidMovement(int, int);
 };
+void updateGameView(Player);
 
 int main()
 {
@@ -109,8 +109,6 @@ int main()
 
 /* runs the game and returns the score*/
 int runGame(){
-    double startTime = TimeNow();
-    // LCD.WriteLine("Play Game Here");
     int x,y;
     Player player;
     FEHIcon::Icon buttons[5];
@@ -118,7 +116,7 @@ int runGame(){
     FEHIcon::DrawIconArray(buttons, 1, 5, 0, 210, 80, 90, Labels, GOLD, WHITE);
     LCD.Clear();
 
-    while(player.xPosition && player.yPosition < 240){
+    while(player.yPosition < 240){
 
         /* friction*/
         if(player.xVelocity > MOVEMENT_SPEED){
@@ -197,16 +195,15 @@ int runGame(){
         }
 
 
-        updateGameView(player.xPosition, player.yPosition, static_cast<int>(round(TimeNow() - startTime)));
+        updateGameView(player);
         Sleep(10);      
     }
     waitForBackButton();
-    return 600 - static_cast<int>(round(TimeNow() - startTime));
+    return 600 - static_cast<int>(round(TimeNow() - player.startTime));
 }
 
 /* updates the game frame with the given x and y position*/
-void updateGameView(int x, int y, int time){
-
+void updateGameView(Player player){
     FEHImage background;
     background.Open("level1.png");
     background.Draw(0,0);
@@ -220,40 +217,13 @@ void updateGameView(int x, int y, int time){
         buttonImages[i].Draw(85 + i*30, 2);
     }
 
-    char walkCycle[30][29];
-    for(int i = 0; i < 8; i++){
-        strcpy(walkCycle[i], "walkcycle/pixil-frame-0.png");
-    }
-    for(int i = 0; i < 3; i++){
-        strcpy(walkCycle[i + 8], "walkcycle/pixil-frame-1.png");
-    }
-    for(int i = 0; i < 2; i++){
-        strcpy(walkCycle[i + 11], "walkcycle/pixil-frame-2.png");
-    }
-    for(int i = 0; i < 2; i++){
-        strcpy(walkCycle[i + 13], "walkcycle/pixil-frame-3.png");
-    }
-    for(int i = 0; i < 8; i++){
-        strcpy(walkCycle[i + 15], "walkcycle/pixil-frame-4.png");
-    }
-    for(int i = 0; i < 3; i++){
-        strcpy(walkCycle[i + 23], "walkcycle/pixil-frame-5.png");
-    }
-    for(int i = 0; i < 2; i++){
-        strcpy(walkCycle[i + 26], "walkcycle/pixil-frame-6.png");
-    }
-    for(int i = 0; i < 2; i++){
-        strcpy(walkCycle[i + 28], "walkcycle/pixil-frame-7.png");
-    }
+    int index =  static_cast<int>(round((TimeNow() - player.startTime) * 40)) % 30;
 
+    FEHImage drawPlayer;
+    drawPlayer.Open(player.walkCycle[index]);
+    drawPlayer.Draw(player.xPosition - PLAYER_HEIGHT/2, player.yPosition);
 
-    int index =  static_cast<int>(round((TimeNow() - startTime) * 40)) % 30;
-
-    FEHImage player;
-    player.Open(walkCycle[index]);
-    player.Draw(x - PLAYER_HEIGHT/2, y);
-
-    LCD.WriteAt(time, 279,  13 );
+    LCD.WriteAt(static_cast<int>(round(TimeNow() - player.startTime)), 279,  13 );
 
 
 }
@@ -291,40 +261,65 @@ void waitForBackButton(){
 bool Player::isValidMovement(int deltax, int deltay){
     /* TODO: look into making it into a hashtable*/
     int proposedx = xPosition + deltax;
-    if(proposedx >= 0 && proposedx <= (3*BLOCK_WIDTH) ){
+    bool result = true;
+    if(proposedx < 0){
+        result = false;
+    }else if(proposedx >= 0 && proposedx <= (3*BLOCK_WIDTH) ){
         if(yPosition + deltay + PLAYER_HEIGHT > 220){
-            return false;
-        }else{
-            return true;
+            result = false;
         }
     } else if(proposedx >= 4*BLOCK_WIDTH && proposedx < 5*BLOCK_WIDTH){
         if(yPosition + deltay + PLAYER_HEIGHT > 220){
-            return false;
-        }else{
-            return true;
+            result = false;
         }
     } else if(proposedx >= 5*BLOCK_WIDTH && proposedx < 6*BLOCK_WIDTH){
         if(yPosition + deltay + PLAYER_HEIGHT > 198){
-            return false;
-        }else{
-            return true;
+            result = false;
         }
     }else if(proposedx >= 6*BLOCK_WIDTH && proposedx < 7*BLOCK_WIDTH){
         if(yPosition + deltay + PLAYER_HEIGHT > 178){
-            return false;
-        }else{
-            return true;
+            result = false;
         }
     }else if(proposedx >= 9*BLOCK_WIDTH && proposedx < 10*BLOCK_WIDTH){
         if(yPosition + deltay + PLAYER_HEIGHT > 178){
-            return false;
-        }else{
-            return true;
+            result = false;
         }
     }
 
-    else{
-        return true;
+    return result;
+
+}
+
+Player::Player(){
+    xPosition = 5; 
+    yPosition = 100; 
+    xVelocity = 0; 
+    yVelocity = 0;
+
+    for(int i = 0; i < 8; i++){
+        strcpy(walkCycle[i], "walkcycle/pixil-frame-0.png");
+    }
+    for(int i = 0; i < 3; i++){
+        strcpy(walkCycle[i + 8], "walkcycle/pixil-frame-1.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 11], "walkcycle/pixil-frame-2.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 13], "walkcycle/pixil-frame-3.png");
+    }
+    for(int i = 0; i < 8; i++){
+        strcpy(walkCycle[i + 15], "walkcycle/pixil-frame-4.png");
+    }
+    for(int i = 0; i < 3; i++){
+        strcpy(walkCycle[i + 23], "walkcycle/pixil-frame-5.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 26], "walkcycle/pixil-frame-6.png");
+    }
+    for(int i = 0; i < 2; i++){
+        strcpy(walkCycle[i + 28], "walkcycle/pixil-frame-7.png");
     }
 
+    startTime = TimeNow();
 }
