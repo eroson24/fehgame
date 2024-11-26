@@ -37,10 +37,6 @@ void updateGameView(Player);
 
 int main()
 {
-    // FEHImage startButton;
-    // startButton.Open("Untitled.png");
-    // startButton.Draw(0,0);
-
     int xPosition, yPosition;
     int highScoreList[4] = {4,3,2,1};
 
@@ -161,20 +157,10 @@ int runGame(){
 
         }
 
-        /* gravity, this code will def make errors later. 
-        The question is whether or not they are bad enough to make me wanna get good logic
-        it is now later and I can confirm it is not working :(*/
-        //player.yPosition += player.yVelocity;
-        // if(player.isValidMovement(/*player.xPosition + player.xVelocity, player.yPosition + player.yVelocity, */0, 1)){
-        //     player.yPosition -= player.yVelocity;
-        //     player.yVelocity += 1;
-        // } else{
-        //     player.yVelocity = 0;
-        // }
-        player.yVelocity++;
+        player.yVelocity++; // gravity
 
 
-        /*same here, i will be surprised if this works long term*/
+        /* makes the player move as far as possible in the x direction*/
         while(abs(player.xVelocity) > 0 ){
             if(player.isValidMovement(player.xVelocity, 0)){
                 player.xPosition += player.xVelocity;
@@ -184,13 +170,13 @@ int runGame(){
             }
         }
 
-        /*same here, i will be surprised if this works long term*/
+        /* makes the player move as far as possible in the y direction*/
         while(abs(player.yVelocity) > 0 ){
             if(player.isValidMovement(0, player.yVelocity)){
                 player.yPosition += player.yVelocity;
                 break;
             }else{
-                player.yVelocity-= player.yVelocity/abs(player.yVelocity);
+                player.yVelocity -= player.yVelocity/abs(player.yVelocity);
             }
         }
 
@@ -220,7 +206,8 @@ void updateGameView(Player player){
     int index =  static_cast<int>(round((TimeNow() - player.startTime) * 40)) % 30;
 
     FEHImage drawPlayer;
-    drawPlayer.Open(player.walkCycle[index]);
+    //drawPlayer.Open(player.walkCycle[index]);
+    drawPlayer.Open("playeridleframe1.png");
     drawPlayer.Draw(player.xPosition - PLAYER_HEIGHT/2, player.yPosition);
 
     LCD.WriteAt(static_cast<int>(round(TimeNow() - player.startTime)), 279,  13 );
@@ -243,7 +230,7 @@ void displayScores(int highScoreList[]){
     LCD.WriteLine("3: " + to_string(highScoreList[2]));
 }
 
-/* creates a white square in the top right and puases the program until the user clicks it*/
+/* creates a symbol in the top right and puases the program until the user clicks it*/
 void waitForBackButton(){
     int xPosition=0, yPosition=0;
     FEHImage backButton;
@@ -258,13 +245,19 @@ void waitForBackButton(){
     LCD.Clear();
 }
 
+/* 
+given a player, checks if its velocity can be added to its position without colliding with an object.
+welcome to if statement hell
+*/
 bool Player::isValidMovement(int deltax, int deltay){
-    /* TODO: look into making it into a hashtable*/
     int proposedx = xPosition + deltax;
     bool result = true;
-    if(proposedx < 0){
+    
+    if(proposedx <= 0 || proposedx >= 320){
         result = false;
-    }else if(proposedx >= 0 && proposedx <= (3*BLOCK_WIDTH) ){
+    }
+    /* first layer*/
+    if(proposedx > 0 && proposedx <= (3*BLOCK_WIDTH) ){
         if(yPosition + deltay + PLAYER_HEIGHT > 220){
             result = false;
         }
@@ -273,7 +266,7 @@ bool Player::isValidMovement(int deltax, int deltay){
             result = false;
         }
     } else if(proposedx >= 5*BLOCK_WIDTH && proposedx < 6*BLOCK_WIDTH){
-        if(yPosition + deltay + PLAYER_HEIGHT > 198){
+        if(yPosition + deltay + PLAYER_HEIGHT > 199){
             result = false;
         }
     }else if(proposedx >= 6*BLOCK_WIDTH && proposedx < 7*BLOCK_WIDTH){
@@ -281,8 +274,43 @@ bool Player::isValidMovement(int deltax, int deltay){
             result = false;
         }
     }else if(proposedx >= 9*BLOCK_WIDTH && proposedx < 10*BLOCK_WIDTH){
-        if(yPosition + deltay + PLAYER_HEIGHT > 178){
+        if(yPosition + deltay + PLAYER_HEIGHT > 179){
             result = false;
+        }
+    } else if(proposedx >= 11 * BLOCK_WIDTH && proposedx < 14*BLOCK_WIDTH ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 179){
+            result = false;
+        }
+    } else if(proposedx >= 14 * BLOCK_WIDTH && proposedx < 15*BLOCK_WIDTH ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 158){
+            result = false;
+        }
+    }else if(proposedx >= 15 * BLOCK_WIDTH && proposedx < 16*BLOCK_WIDTH ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 137){
+            result = false;
+        }
+    }
+
+    /* second layer*/
+    if(proposedx >= 252 && proposedx < 272){
+        if(yPosition + deltay + PLAYER_HEIGHT > 109 && yPosition + deltay < 129){
+                result= false;
+        }
+    }else if(proposedx >= 214 && proposedx < 233 ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 109 && yPosition + deltay < 128){
+                result= false;
+        }
+    }else if(proposedx >= 166 && proposedx < 185 ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 104 && yPosition + deltay  < 123){
+                result= false;
+        }
+    }else if(proposedx >= 108 && proposedx < 127 ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 111 && yPosition + deltay  < 130){
+                result= false;
+        }
+    }else if(proposedx >= 18 && proposedx < 77 ){
+        if(yPosition + deltay + PLAYER_HEIGHT > 105 && yPosition + deltay  < 125){
+                result= false;
         }
     }
 
