@@ -30,6 +30,8 @@ class Player{
         int xVelocity;
         int yVelocity;
         char walkCycle[30][29];
+        char walkCycleLeft[30][34];
+
         int startTime;
         bool isValidMovement(int, int);
 };
@@ -206,8 +208,13 @@ void updateGameView(Player player){
     int index =  static_cast<int>(round((TimeNow() - player.startTime) * 40)) % 30;
 
     FEHImage drawPlayer;
-    //drawPlayer.Open(player.walkCycle[index]);
-    drawPlayer.Open("playeridleframe1.png");
+    if(player.xVelocity > 0){
+        drawPlayer.Open(player.walkCycle[index]);
+    }else if(player.xVelocity < 0){
+        drawPlayer.Open(player.walkCycleLeft[index]);
+    }else{
+        drawPlayer.Open("playeridleframe1.png");
+    }
     drawPlayer.Draw(player.xPosition - PLAYER_HEIGHT/2, player.yPosition);
 
     LCD.WriteAt(static_cast<int>(round(TimeNow() - player.startTime)), 279,  13 );
@@ -297,15 +304,15 @@ bool Player::isValidMovement(int deltax, int deltay){
                 result= false;
         }
     }else if(proposedx >= 214 && proposedx < 233 ){
-        if(yPosition + deltay + PLAYER_HEIGHT > 109 && yPosition + deltay < 128){
+        if(yPosition + deltay + PLAYER_HEIGHT > 108 && yPosition + deltay < 128){
                 result= false;
         }
     }else if(proposedx >= 166 && proposedx < 185 ){
-        if(yPosition + deltay + PLAYER_HEIGHT > 104 && yPosition + deltay  < 123){
+        if(yPosition + deltay + PLAYER_HEIGHT > 103 && yPosition + deltay  < 123){
                 result= false;
         }
     }else if(proposedx >= 108 && proposedx < 127 ){
-        if(yPosition + deltay + PLAYER_HEIGHT > 111 && yPosition + deltay  < 130){
+        if(yPosition + deltay + PLAYER_HEIGHT > 110 && yPosition + deltay  < 130){
                 result= false;
         }
     }else if(proposedx >= 18 && proposedx < 77 ){
@@ -326,27 +333,43 @@ Player::Player(){
 
     for(int i = 0; i < 8; i++){
         strcpy(walkCycle[i], "walkcycle/pixil-frame-0.png");
+        strcpy(walkCycleLeft[i], "walkcycle_left/pixil-frame-0.png");
+
     }
     for(int i = 0; i < 3; i++){
         strcpy(walkCycle[i + 8], "walkcycle/pixil-frame-1.png");
+        strcpy(walkCycleLeft[i + 8], "walkcycle_left/pixil-frame-1.png");
+
     }
     for(int i = 0; i < 2; i++){
         strcpy(walkCycle[i + 11], "walkcycle/pixil-frame-2.png");
+        strcpy(walkCycleLeft[i + 11], "walkcycle_left/pixil-frame-2.png");
+
     }
     for(int i = 0; i < 2; i++){
         strcpy(walkCycle[i + 13], "walkcycle/pixil-frame-3.png");
+        strcpy(walkCycleLeft[i + 13], "walkcycle_left/pixil-frame-3.png");
+
     }
     for(int i = 0; i < 8; i++){
         strcpy(walkCycle[i + 15], "walkcycle/pixil-frame-4.png");
+        strcpy(walkCycleLeft[i + 15], "walkcycle_left/pixil-frame-4.png");
+
     }
     for(int i = 0; i < 3; i++){
         strcpy(walkCycle[i + 23], "walkcycle/pixil-frame-5.png");
+        strcpy(walkCycleLeft[i + 23], "walkcycle_left/pixil-frame-5.png");
+
     }
     for(int i = 0; i < 2; i++){
         strcpy(walkCycle[i + 26], "walkcycle/pixil-frame-6.png");
+        strcpy(walkCycleLeft[i + 26], "walkcycle_left/pixil-frame-6.png");
+
     }
     for(int i = 0; i < 2; i++){
         strcpy(walkCycle[i + 28], "walkcycle/pixil-frame-7.png");
+        strcpy(walkCycleLeft[i + 28], "walkcycle_left/pixil-frame-7.png");
+
     }
 
     startTime = TimeNow();
