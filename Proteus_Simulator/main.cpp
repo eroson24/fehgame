@@ -19,10 +19,8 @@ int runGame();
 void displayGameOver(int);
 void displayScores(int []);
 void waitForBackButton();
-
+/* a class that stores data relating to the player including position, velocity, and sprites*/
 class Player{
-    private:
-
     public:
         Player();
         int xPosition;
@@ -40,7 +38,7 @@ void updateGameView(Player);
 int main()
 {
     int xPosition, yPosition;
-    int highScoreList[4] = {4,3,2,1};
+    int highScoreList[4] = {0,0,0,0};
 
     while (1) {
         LCD.Clear();
@@ -58,11 +56,9 @@ int main()
             // add line to add score to highScoreList
             highScoreList[3] = score;
             sort(highScoreList, highScoreList + 4, greater<int>());
+
+            /* shows game over screen with score*/
             displayGameOver(score);
-
-            LCD.WriteLine("click in the upper right to go back");
-
-            waitForBackButton();
 
         /* score board*/
         }else if(xPosition <= 160 && xPosition > 80){
@@ -114,7 +110,11 @@ int runGame(){
     FEHIcon::DrawIconArray(buttons, 1, 5, 0, 210, 80, 90, Labels, GOLD, WHITE);
     LCD.Clear();
 
-    while(player.yPosition < 240){
+    /* while the player isn't at the end and the time hasn't reached the limit yet*/
+    while(!(player.yPosition < 120 && player.xPosition < 30) && static_cast<int>(round(TimeNow() - player.startTime)) < 600){
+        if(player.yPosition > 240){
+            return -1;
+        }
 
         /* friction*/
         if(player.xVelocity > MOVEMENT_SPEED){
@@ -182,15 +182,14 @@ int runGame(){
             }
         }
 
-
         updateGameView(player);
         Sleep(10);      
     }
-    waitForBackButton();
+    /* returns 600 - time elapsed*/ 
     return 600 - static_cast<int>(round(TimeNow() - player.startTime));
 }
 
-/* updates the game frame with the given x and y position*/
+/* updates the game for the given player class*/
 void updateGameView(Player player){
     FEHImage background;
     background.Open("level1.png");
@@ -224,7 +223,14 @@ void updateGameView(Player player){
 
 /* prints the game over screen with the results from the game*/
 void displayGameOver(int score){
-    // TODO
+    LCD.Clear();
+    if(score == -1){
+        LCD.WriteLine("You didn't finish :(");
+    }else{
+        LCD.WriteLine("Congratulations! ");
+        LCD.WriteLine("Your score was: " + to_string(score));
+    }
+    waitForBackButton();
 }
 
 /* clears the screen and displays the top 3 high scores*/
@@ -253,8 +259,8 @@ void waitForBackButton(){
 }
 
 /* 
-given a player, checks if its velocity can be added to its position without colliding with an object.
-welcome to if statement hell
+Checks if the players velocity can be added to its position without colliding with an object.
+Way too many if statements.
 */
 bool Player::isValidMovement(int deltax, int deltay){
     int proposedx = xPosition + deltax;
@@ -325,9 +331,10 @@ bool Player::isValidMovement(int deltax, int deltay){
 
 }
 
+/* constructor that sets the player at the default starting position with no velocity, and intializes its walk cycle*/
 Player::Player(){
     xPosition = 5; 
-    yPosition = 100; 
+    yPosition = 140; 
     xVelocity = 0; 
     yVelocity = 0;
 
