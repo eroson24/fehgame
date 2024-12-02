@@ -72,7 +72,7 @@ int main()
             LCD.WriteLine("Instructions:");
             LCD.WriteLine(" ");
             LCD.WriteLine(" ");
-            LCD.WriteLine("Click on the buttons at the top to move your character. Your goal is to make it to the very end on the right, avoiding any falls to your death.");
+            LCD.WriteLine("Click on the buttons at the top to move your character. Your goal is to make it to the very end on the top left, avoiding any falls to your death.");
             LCD.WriteLine("Click the arrow in the top right to go back.");
 
             waitForBackButton();
