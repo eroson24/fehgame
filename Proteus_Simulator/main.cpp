@@ -63,16 +63,22 @@ int main()
         /* score board*/
         }else if(xPosition <= 160 && xPosition > 80){
             displayScores(highScoreList);
-            LCD.WriteLine("click in the upper right to go back");
+            LCD.WriteLine("Click the top-right to go back.");
             waitForBackButton();
 
         /* displays the instructions*/
         }else if(xPosition <= 240 && xPosition > 160){
             LCD.Clear();
+            LCD.SetFontColor(ORANGE);
             LCD.WriteLine("Instructions:");
             LCD.WriteLine(" ");
             LCD.WriteLine(" ");
-            LCD.WriteLine("Click on the buttons at the top to move your character. Your goal is to make it to the very end on the right, avoiding any falls to your death.");
+            LCD.SetFontColor(WHITE);
+            LCD.WriteLine("Click on the buttons at");
+            LCD.WriteLine("the top to move your");
+            LCD.WriteLine("character. Make it to the");
+            LCD.WriteLine("pancakes at the end,"); 
+            LCD.WriteLine("avoiding any falls.");
             LCD.WriteLine("Click the arrow in the top right to go back.");
 
             waitForBackButton();
